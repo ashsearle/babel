@@ -578,7 +578,13 @@ export default class Scope {
   isPure(node, constantsOnly?: boolean) {
     if (t.isIdentifier(node)) {
       const binding = this.getBinding(node.name);
-      if (!binding) return false;
+      if (!binding) {
+        return (
+          node.name === "NaN" ||
+          node.name === "Infinity" ||
+          node.name === "undefined"
+        );
+      }
       if (constantsOnly) return binding.constant;
       return true;
     } else if (t.isClass(node)) {
@@ -604,6 +610,11 @@ export default class Scope {
     } else if (t.isObjectExpression(node)) {
       for (const prop of (node.properties: Array<Object>)) {
         if (!this.isPure(prop, constantsOnly)) return false;
+      }
+      return true;
+    } else if (t.isSequenceExpression(node)) {
+      for (const expression of (node.expressions: Array<Object>)) {
+        if (!this.isPure(expression, constantsOnly)) return false;
       }
       return true;
     } else if (t.isClassMethod(node)) {

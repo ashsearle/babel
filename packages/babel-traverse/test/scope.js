@@ -75,7 +75,10 @@ describe("scope", function() {
 
     it("purity", function() {
       assert.ok(
-        getPath("({ x: 1 })").get("body")[0].get("expression").isPure(),
+        getPath("({ x: 1 }, [!NaN, -Infinity, undefined])")
+          .get("body")[0]
+          .get("expression")
+          .isPure(),
       );
     });
 
